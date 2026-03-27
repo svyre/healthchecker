@@ -218,19 +218,19 @@ const desc=document.getElementById("res-desc");
 let resultText="";
 
 if(score <= 6) { 
-            zone = "Зеленая зона"; color = "#2e7d32"; 
+            zone = "Низкий риск"; color = "#2e7d32"; 
             document.getElementById('res-title').innerText = "Зеленая зона: Норма 🟢";
             document.getElementById('res-desc').innerHTML = "<b>Твои показатели в норме!</b> Организм отлично справляется с нагрузками.<br><br><b>Рекомендация:</b> Продолжай спать 8-9 часов и не забывай про активность. Чтобы глаза не уставали от учебы, старайся делать зрительные перерывы каждые 45 минут.";
             document.getElementById('res-desc').style.textAlign = "left";
         }
         else if(score <= 13) { 
-            zone = "Желтая зона"; color = "#f57f17"; 
+            zone = "Средний риск"; color = "#f57f17"; 
             document.getElementById('res-title').innerText = "Желтая зона: Внимание 🟡";
             document.getElementById('res-desc').innerHTML = "<b>Выявлены признаки утомления. Пора скорректировать режим!</b><br><br><b>Рекомендация:</b> Постарайся ложиться спать на 30-40 минут раньше и убирать телефон за час до сна (свет экрана мешает мозгу отдыхать). Не пропускай утренний завтрак — это твоя энергия на первые уроки.";
             document.getElementById('res-desc').style.textAlign = "left";
         }
         else { 
-            zone = "Красная зона"; color = "#c62828"; 
+            zone = "Высокий риск"; color = "#c62828"; 
             document.getElementById('res-title').innerText = "Красная зона: Риск 🔴";
             document.getElementById('res-desc').innerHTML = "<b>Внимание! Высокий уровень переутомления.</b><br><br><b>Рекомендация:</b> Твоя нервная система истощена нагрузками. Начни жестко контролировать отбой (сон не менее 7-8 часов) и резко сократи время в гаджетах. Рекомендуем пересмотреть свое расписание и обсудить нагрузку с родителями.";
             document.getElementById('res-desc').style.textAlign = "left";
