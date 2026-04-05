@@ -219,8 +219,9 @@ getElementById('quiz-screen').classList.add('hidden');
                      • <b>Важно:</b> Обязательно обсуди свою учебную нагрузку с родителями или школьным психологом.`;
         }
 
-        const tag = document.getElementById('res-tag');
-        tag.innerText = zone; tag.style.color = color;
+        const tag = document.getElementById('res-title');
+        tag.innerText = `Результат: ${zone}`;
+        tag.style.color = color;
         const desc = document.getElementById('res-desc');
         desc.innerHTML = advice; desc.style.textAlign = "left";
         
