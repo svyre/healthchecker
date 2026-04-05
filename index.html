@@ -132,113 +132,101 @@ style="width:100%;padding:12px;margin:15px 0;border-radius:10px;border:1px solid
 </div>
 
 <script>
+        
+    const GOOGLE_URL = "https://script.google.com/macros/s/AKfycby-VDxJulVufldbUzaP7CBTOwbkMuhk2QReSzHOT-hIcCv81AupY4GHtNpCR4E-EJvO/exec";
 
+    const questions = [
+        { q: "Чувствуешь ли ты физическое напряжение (сжатые челюсти, напряжение в шее) во время учебы?", a: [{t:"Почти никогда", s:0}, {t:"Иногда замечаю", s:1}, {t:"Постоянно напряжен(а)", s:2}] },
+        { q: "Сколько часов ты обычно спишь в будние дни?", a: [{t:"8-10 часов", s:0}, {t:"6-7 часов", s:1}, {t:"Менее 6 часов", s:2}] },
+        { q: "Часто ли ты просыпаешься с чувством усталости, даже если спал(а) достаточно?", a: [{t:"Редко", s:0}, {t:"2-3 раза в неделю", s:1}, {t:"Почти каждое утро", s:2}] },
+        { q: "За сколько минут до сна ты полностью убираешь смартфон?", a: [{t:"За час и более", s:0}, {t:"За 15-30 минут", s:1}, {t:"Засыпаю с ним", s:2}] },
+        { q: "Завтракаешь ли ты перед школой горячей пищей?", a: [{t:"Да, всегда", s:0}, {t:"Иногда", s:1}, {t:"Никогда", s:2}] },
+        { q: "Сколько времени в день ты проводишь в активном движении (ходьба, спорт)?", a: [{t:"Более 60 минут", s:0}, {t:"Около 30 минут", s:1}, {t:"Почти не двигаюсь", s:2}] },
+        { q: "Делаешь ли ты перерывы при работе с гаджетами каждые 40-45 минут?", a: [{t:"Да, регулярно", s:0}, {t:"Редко", s:1}, {t:"Сижу без перерыва", s:2}] },
+        { q: "Как часто у тебя болит голова или «режет» глаза в конце учебного дня?", a: [{t:"Редко/Никогда", s:0}, {t:"1-2 раза в неделю", s:1}, {t:"Почти каждый день", s:2}] },
+        { q: "Ощущаешь ли ты дискомфорт или боли в спине и пояснице после уроков?", a: [{t:"Нет", s:0}, {t:"Иногда", s:1}, {t:"Постоянно", s:2}] },
+        { q: "Бывает ли чувство, что мысли путаются и сложно сосредоточиться из-за тревоги?", a: [{t:"Редко", s:0}, {t:"Бывает при усталости", s:1}, {t:"Часто не могу собраться", s:2}] },
+        { q: "Замечаешь ли ты за собой повышенную раздражительность по пустякам?", a: [{t:"Нет", s:0}, {t:"Иногда", s:1}, {t:"Часто срываюсь", s:2}] },
+        { q: "Соблюдаешь ли ты питьевой режим (около 1.5 л чистой воды в день)?", a: [{t:"Да", s:0}, {t:"Пью мало", s:1}, {t:"Только чай/сок/газировку", s:2}] },
+        { q: "Как часто тебе кажется, что времени катастрофически не хватает и ты делаешь всё в спешке?", a: [{t:"Редко", s:0}, {t:"Периодически", s:1}, {t:"Постоянно", s:2}] },
+        { q: "Трудно ли тебе расслабиться и перестать думать об учебе в свободное время?", a: [{t:"Легко отвлекаюсь", s:0}, {t:"Иногда сложно", s:1}, {t:"Постоянно в мыслях о делах", s:2}] },
+        { q: "Чувствуешь ли ты упадок сил и нежелание общаться с кем-либо после школы?", a: [{t:"Редко", s:0}, {t:"Часто", s:1}, {t:"Почти всегда", s:2}] }
+    ];
 
-const SHEET_API_URL="https://script.google.com/macros/s/AKfycby-VDxJulVufldbUzaP7CBTOwbkMuhk2QReSzHOT-hIcCv81AupY4GHtNpCR4E-EJvO/exec";
+    let current = 0; let score = 0; let userName = "";
 
+    function startQuiz() {
+        userName = document.getElementById('user-name').value || "Аноним";
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('p-container').style.display = 'block';
+        showQuestion();
+    }
 
-let userName="";
-let current=0;
-let score=0;
+    function showQuestion() {
+        const q = questions[current];
+        document.getElementById('question').innerText = q.q;
+        const opt = document.getElementById('options');
+        opt.innerHTML = '';
+        q.a.forEach(answer => {
+            const b = document.createElement('button');
+            b.innerText = answer.t; b.className = 'option-btn';
+            b.onclick = () => {
+                score += answer.s; current++; updateProgress();
+                if(current < questions.length) showQuestion();
+                else showResult();
+            };
+            opt.appendChild(b);
+        });
+    }
 
-const questions = [
-        { q: "Как ты оцениваешь свое самочувствие к концу учебного дня?", a: [{t:"Остаются силы на хобби", s:0}, {t:"Чувствую усталость", s:1}, {t:"Полное истощение", s:2}] },
-        { q: "Сколько часов ты спишь в будние дни?", a: [{t:"8-10 часов", s:0}, {t:"6-7 часов", s:1}, {t:"Менее 6 часов", s:2}] },
-        { q: "За сколько минут до сна ты убираешь телефон?", a: [{t:"За час и более", s:0}, {t:"За 15-30 минут", s:1}, {t:"Засыпаю с телефоном", s:2}] },
-        { q: "Завтракаешь ли ты перед школой горячей пищей?", a: [{t:"Да, всегда", s:0}, {t:"Иногда / пью только чай", s:1}, {t:"Никогда", s:2}] },
-        { q: "Сколько времени в день ты проводишь в движении?", a: [{t:"Более 60 минут", s:0}, {t:"Около 30 минут", s:1}, {t:"Почти не двигаюсь", s:2}] },
-        { q: "Делаешь ли ты перерывы при работе за компьютером/телефоном?", a: [{t:"Да, каждые 40-50 минут", s:0}, {t:"Редко", s:1}, {t:"Сижу без перерыва", s:2}] },
-        { q: "Как часто у тебя болит голова или режет глаза?", a: [{t:"Редко/Никогда", s:0}, {t:"1-2 раза в неделю", s:1}, {t:"Почти каждый день", s:2}] },
-        { q: "Ощущаешь ли ты дискомфорт в шее или спине?", a: [{t:"Нет", s:0}, {t:"Иногда после уроков", s:1}, {t:"Постоянные боли", s:2}] },
-        { q: "Сколько чистой воды ты выпиваешь за день?", a: [{t:"Больше 1-1.5 литров", s:0}, {t:"Пару стаканов", s:1}, {t:"Только чай/газировки", s:2}] },
-        { q: "Твой средний уровень эмоционального напряжения?", a: [{t:"Спокоен(на)", s:0}, {t:"Периодически нервничаю", s:1}, {t:"Постоянная тревога", s:2}] }
-    ];;
+    function updateProgress() { document.getElementById('p-bar').style.width = (current / questions.length) * 100 + '%'; }
 
-function goToStart(){
-userName=document.getElementById("username").value||"Аноним";
-document.getElementById("welcome-screen").classList.add("hidden");
-document.getElementById("start-screen").classList.remove("hidden");
-}
+    async function sendToTable(finalScore, zone) {
+        const url = ${GOOGLE_URL}?name=${encodeURIComponent(userName)}&score=${finalScore}&zone=${encodeURIComponent(zone)};
+        try { await fetch(url, { mode: 'no-cors' }); } catch (e) { console.log("Ошибка"); }
+    }
 
-function startQuiz(){
-document.getElementById("start-screen").classList.add("hidden");
-document.getElementById("quiz-screen").classList.remove("hidden");
-document.getElementById("p-container").style.display="block";
-showQuestion();
-}
+    function showResult() {
+        document.
+getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('p-container').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
 
-function showQuestion(){
-const q=questions[current];
-document.getElementById("question").innerText=q.q;
-
-const opt=document.getElementById("options");
-opt.innerHTML="";
-
-q.a.forEach(ans=>{
-const b=document.createElement("button");
-b.className="option-btn";
-b.innerText=ans.t;
-
-b.onclick=()=>{
-    score+=ans.s;
-current++;
-updateProgress();
-current<questions.length?showQuestion():showResult();
-};
-
-opt.appendChild(b);
-});
-}
-
-function updateProgress(){
-document.getElementById("p-bar").style.width=
-(current/questions.length*100)+"%";
-}
-
-function sendResultToSheets(resultText){
-fetch(SHEET_API_URL,{
-method:"POST",
-body:JSON.stringify({
-name:userName,
-score:score,
-result:resultText
-})
-});
-}
-
-function showResult(){
-
-document.getElementById("quiz-screen").classList.add("hidden");
-document.getElementById("p-container").classList.add("hidden");
-document.getElementById("result-screen").classList.remove("hidden");
-
-const title=document.getElementById("res-title");
-const desc=document.getElementById("res-desc");
-
-let resultText="";
-
-if(score <= 6) { 
-            zone = "Низкий риск"; color = "#2e7d32"; 
-            document.getElementById('res-title').innerText = "Зеленая зона: Норма 🟢";
-            document.getElementById('res-desc').innerHTML = "<b>Твои показатели в норме!</b> Организм отлично справляется с нагрузками.<br><br><b>Рекомендация:</b> Продолжай спать 8-9 часов и не забывай про активность. Чтобы глаза не уставали от учебы, старайся делать зрительные перерывы каждые 45 минут.";
-            document.getElementById('res-desc').style.textAlign = "left";
+        let zone = ""; let color = ""; let advice = "";
+        
+        if(score <= 9) { 
+            zone = "Низкий риск (Зеленая зона)"; color = "#2e7d32"; 
+            document.getElementById('res-title').innerText = "Результат: Низкий риск 🟢";
+            advice = `<b>Показатели в норме!</b> Организм успешно справляется с нагрузками.<br><br>
+                     • <b>Сон:</b> Продолжай соблюдать режим 8-9 часов.<br>
+                     • <b>Профилактика:</b> Используй правило «20-20-20» при работе за ПК: каждые 20 мин смотри на 6 метров вдаль в течение 20 сек.`;
         }
-        else if(score <= 13) { 
-            zone = "Средний риск"; color = "#f57f17"; 
-            document.getElementById('res-title').innerText = "Желтая зона: Внимание 🟡";
-            document.getElementById('res-desc').innerHTML = "<b>Выявлены признаки утомления. Пора скорректировать режим!</b><br><br><b>Рекомендация:</b> Постарайся ложиться спать на 30-40 минут раньше и убирать телефон за час до сна (свет экрана мешает мозгу отдыхать). Не пропускай утренний завтрак — это твоя энергия на первые уроки.";
-            document.getElementById('res-desc').style.textAlign = "left";
+        else if(score <= 20) { 
+            zone = "Средний риск (Желтая зона)"; color = "#f57f17"; 
+            document.getElementById('res-title').innerText = "Результат: Средний риск 🟡";
+            advice = `<b>Выявлены признаки утомления.</b> Требуется коррекция режима.<br><br>
+                     • <b>Мелатониновый буфер:</b> Убирай смартфон за 40 минут до сна. Синий свет экрана блокирует восстановление мозга.<br>
+                     • <b>Дыхание:</b> При чувстве спешки используй «квадратное дыхание» (вдох-пауза-выдох-пауза по 4 сек).<br>
+                     • <b>Гидратация:</b> Увеличь потребление воды для снижения чувства усталости.`;
         }
         else { 
-            zone = "Высокий риск"; color = "#c62828"; 
-            document.getElementById('res-title').innerText = "Красная зона: Риск 🔴";
-            document.getElementById('res-desc').innerHTML = "<b>Внимание! Высокий уровень переутомления.</b><br><br><b>Рекомендация:</b> Твоя нервная система истощена нагрузками. Начни жестко контролировать отбой (сон не менее 7-8 часов) и резко сократи время в гаджетах. Рекомендуем пересмотреть свое расписание и обсудить нагрузку с родителями.";
-            document.getElementById('res-desc').style.textAlign = "left";
+            zone = "Высокий риск (Красная зона)"; color = "#c62828"; 
+            document.getElementById('res-title').innerText = "Результат: Высокий риск 🔴";
+            advice = `<b>Внимание! Состояние дистресса.</b> Необходимы экстренные меры отдыха.<br><br>
+                     • <b>Восстановление:</b> Сон сегодня не позднее 22:30. Тебе нужно минимум 9 часов для перезагрузки системы.<br>
+                     • <b>Релаксация:</b> Сделай разминку шейного отдела для снятия мышечных зажимов (маркер стресса PSM-25).<br>
+                     • <b>Важно:</b> Обязательно обсуди свою учебную нагрузку с родителями или школьным психологом.`;
         }
 
-sendResultToSheets(resultText);
-}
-
+        const tag = document.getElementById('res-tag');
+        tag.innerText = zone; tag.style.color = color;
+        const desc = document.getElementById('res-desc');
+        desc.innerHTML = advice; desc.style.textAlign = "left";
+        
+        sendToTable(score, zone);
+    }
+                
 </script>
 </body>
 </html>
