@@ -108,7 +108,7 @@ style="width:100%;padding:12px;margin:15px 0;border-radius:10px;border:1px solid
 <div id="start-screen" class="hidden">
 <div class="heart-rate"></div>
 <h1>Диагностика Здоровья</h1>
-<p>Экспресс-тест из 10 вопросов</p>
+<p>Экспресс-тест из 15 вопросов</p>
 <button class="btn" onclick="startQuiz()">Начать диагностику</button>
 </div>
 
@@ -156,7 +156,7 @@ style="width:100%;padding:12px;margin:15px 0;border-radius:10px;border:1px solid
     let current = 0; let score = 0; let userName = "";
 
     function startQuiz() {
-        userName = document.getElementById('user-name').value || "Аноним";
+        userName = document.getElementById('username').value || "Аноним";
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
         document.getElementById('p-container').style.display = 'block';
